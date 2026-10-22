@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#071715"/>
+  <meta name="description" content="Jelajahi rekonstruksi interaktif 3D Cluster Pasai Timur, Modernland Cilejit. Sebuah eksperimen digital berbasis referensi lokasi."/>
+  <title>Pasai Timur — Neighborhood Explorer</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+  <link rel="stylesheet" href="/styles.css"/>
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <div id="stage" aria-label="Tampilan 3D kawasan Pasai Timur"></div>
+  <div id="vignette"></div>
+  <div id="loader" role="status" aria-live="polite">
+    <div class="loader-mark">P<span>.</span></div>
+    <p class="loader-kicker">MODERNLAND CILEJIT · EXPERIMENTAL 3D MAP</p>
+    <h1>Membangun lingkungan<br/><em>Pasai Timur</em></h1>
+    <div class="loader-track"><i id="loadingBar"></i></div>
+    <small id="loadingText">Menyiapkan lingkungan interaktif…</small>
+  </div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Pasai Timur home">
+      <div class="brand-symbol">P<span>.</span></div>
+      <div><strong>PASAI TIMUR</strong><small>NEIGHBORHOOD EXPLORER</small></div>
+    </a>
+    <div class="top-center"><span class="live-dot"></span> INTERACTIVE 3D EXPERIENCE <span class="top-split">/</span> CILEJIT, BANTEN</div>
+    <div class="top-actions">
+      <a class="ghost-link" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/@-6.3478562,106.5167093,17.75z"> <span class="external-icon">↗</span> Google Maps</a>
+      <button id="soundToggle" class="icon-button" title="Suara lingkungan" aria-label="Toggle suara lingkungan">◌</button>
+      <button id="helpToggle" class="icon-button" title="Panduan" aria-label="Bantuan">?</button>
+    </div>
+  </header>
+  <main>
+    <section class="intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> DIGITAL NEIGHBORHOOD / 001</div>
+      <h1>Rasakan<br/><em>lingkungannya.</em></h1>
+      <p>Susuri jalanan Pasai Timur dari perspektif yang berbeda. Sebuah kawasan yang bisa kamu jelajahi, bukan sekadar dilihat di peta.</p>
+      <div class="location-row"><span class="location-icon">⌖</span><span>Cluster Pasai Timur<br/><b>Modernland Cilejit · Tangerang</b></span></div>
+      <div class="intro-buttons">
+        <button id="walkStart" class="btn-primary"><span>↗</span> Mulai menjelajah</button>
+        <button id="droneStart" class="btn-outline">◈ &nbsp; Lihat dari atas</button>
+      </div>
+    </section>
+    <section class="scene-hud">
+      <div class="hud-head"><div class="crosshair-icon">⌖</div><div><small>YOU ARE EXPLORING</small><strong id="zoneName">Cluster Pasai Timur</strong></div></div>
+      <div class="stats"><div><small>MODE</small><strong id="viewLabel">DRONE VIEW</strong></div><div><small>SCENE</small><strong id="sceneLabel">DAYLIGHT</strong></div><div><small>BUILDINGS</small><strong id="unitCount">—</strong></div></div>
+      <div class="control-group"><button id="droneBtn" class="mode-button selected">◇ &nbsp; Drone</button><button id="walkBtn" class="mode-button">♙ &nbsp; Walk</button><button id="resetBtn" class="mode-square" title="Reset kamera">↺</button></div>
+      <div class="control-group secondary"><button id="dayBtn" class="mode-button selected">☀ &nbsp; Siang</button><button id="eveningBtn" class="mode-button">☾ &nbsp; Senja</button></div>
+    </section>
+    <aside class="minimap-wrap" id="minimapWrap">
+      <div class="mini-head"><div><span class="green-point"></span> MASTER PLAN <small>CONCEPTUAL</small></div><button id="mapToggle" title="Ciutkan peta">⌄</button></div>
+      <canvas id="minimap" width="600" height="420" aria-label="Skema mini map dengan posisi kamera"></canvas>
+      <div class="mini-footer"><span>−6.347856, 106.516709</span><span>N ↑</span></div>
+    </aside>
+    <aside id="infoPanel" class="info-panel" aria-live="polite">
+      <div class="panel-top"><span>FIELD NOTES / 01</span><button id="infoClose" title="Tutup">×</button></div>
+      <div class="info-illustration"><span>⌂</span><div class="illustration-grid"></div></div>
+      <div id="infoContent">
+        <span class="eyebrow soft">TENTANG PROYEK</span>
+        <h2>Eksplorasi digital<br/>Pasai Timur.</h2>
+        <p>Model 3D awal yang mengikuti pola sirkulasi utama pada screenshot peta. Bentuk fasad terinspirasi dari tipe rumah RS Modernland Cilejit.</p>
+        <div class="data-line"><span>Status geometri</span><strong>REKONSTRUKSI</strong></div>
+        <div class="data-line"><span>Sumber referensi</span><strong>MAPS + SIKUMBANG</strong></div>
+        <div class="disclaimer">Ini bukan peta survei atau representasi presisi tiap kavling. Klik rumah untuk melihat info objek 3D.</div>
+      </div>
+    </aside>
+    <div class="bottom-left"><div class="bottom-separator"></div><span>01 / EXPLORE</span><small>Built for the joy of exploring places.</small></div>
+    <div class="bottom-right" id="hint"><kbd>DRAG</kbd> Putar kamera <span>·</span> <kbd>SCROLL</kbd> Zoom <span>·</span> <kbd>CLICK</kbd> Pilih bangunan</div>
+    <div class="center-crosshair" id="crosshair"></div>
+    <div class="mobile-controls" id="mobileControls" aria-label="Kontrol berjalan kaki">
+      <div class="joystick" id="joystick"><div id="joystickKnob"></div></div>
+      <div class="mobile-hint">GESER KANAN UNTUK MELIHAT</div>
+      <button id="mobileExit" class="mobile-exit">✕ Keluar walk</button>
+    </div>
+    <div class="help-modal" id="helpModal" aria-hidden="true">
+      <div class="help-content"><button id="helpClose" class="help-close">×</button><span class="eyebrow soft">HOW TO EXPLORE</span><h2>Temukan sudut<br/>favoritmu.</h2>
+      <p><b>Drone</b> · Drag untuk putar, scroll/pinch untuk zoom, klik objek rumah untuk informasi.</p>
+      <p><b>Walk</b> · WASD atau tombol panah untuk bergerak, mouse untuk melihat sekeliling. Di HP gunakan joystick di kiri dan geser sisi kanan.</p>
+      <p><b>Tips</b> · Tombol ESC mengembalikan kursor. Tekan R untuk kembali ke titik awal.</p>
+      <button id="helpDone" class="btn-primary">Mulai eksplorasi <span>→</span></button>
+      </div>
+    </div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </main>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
